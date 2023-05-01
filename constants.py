@@ -32,26 +32,34 @@ BLUE = (25, 70, 255)
 FOREGROUND_GREYED = (88, 37, 0)
 BACKGROUND_GREYED = (127, 58, 6)
 
-dir_path = os.path.join(os.environ['APPDATA'], 'Mamono')
+if sys.platform.startswith('darwin'):
+    dir_path = os.path.join(os.path.expanduser('~'), 'Library', 'Application Support', 'Mamono')
+elif sys.platform.startswith('linux') or sys.platform.startswith('win32'):
+    dir_path = os.path.join(os.environ['APPDATA'], 'Mamono')
+else:
+    raise ValueError('Unsupported platform')
+
 if not os.path.exists(dir_path):
     os.makedirs(dir_path)
 if sys.platform.startswith('linux'):
     userdata_folder = str(Path.home()) + '\local\share\\'
 if sys.platform.startswith('win32'):
     userdata_folder = os.getenv('APPDATA')
-userdata_folder += '\Mamono Sweeper\\'
+if sys.platform.startswith('darwin'):
+    userdata_folder = os.path.join(os.path.expanduser('~'), 'Library', 'Application Support')
+userdata_folder = os.path.join(userdata_folder, 'Mamono Sweeper')
 userdata_path = Path(fr"{userdata_folder}")
 try:
     os.mkdir(userdata_path)
 except FileExistsError:
     pass
 
-HIGH_SCORES_FILE_NAME = f'{userdata_folder}\\high_scores'
+HIGH_SCORES_FILE_NAME = os.path.join(userdata_folder, 'high_scores')
 ONLINE_HIGH_SCORES_FILE_NAME = 'high_scores_online'
 
-USER_FILE_NAME = f'{userdata_folder}\\user'
+USER_FILE_NAME = os.path.join(userdata_folder, 'user')
 
-SAVE_FILE_NAME = f'{userdata_folder}\\save'
+SAVE_FILE_NAME = os.path.join(userdata_folder, 'save')
 
 HOST, PORT, PASSWORD, USERNAME = [None] * 4
 with open('server_info', 'r') as f:
